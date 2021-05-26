@@ -3,8 +3,8 @@
     {
       "image": "{{ user `source_image` }}",
       "image_description": "Cluster API Kubernetes {{ user `kubernetes_semver` }} {{ user `snapshot_name_suffix` }}",
-      "image_label": "cluster-api-{{ user `build_name` }}:{{ user `kubernetes_semver` | replace_all `.` `-` }}",
-      "instance_label": "capi-{{ user `kubernetes_semver` }}-{{ user `build_name` }}-{{timestamp}}",
+      "image_label": "cluster-api-{{user `build_name`}}-k8s-{{user `kubernetes_semver`}}",
+      "instance_label": "capi-{{timestamp}}",
       "instance_type": "{{ user `size` }}",
       "linode_token": "{{ user `access_token` }}",
       "name": "{{user `build_name`}}",
@@ -69,7 +69,7 @@
     "kubernetes_semver": null,
     "kubernetes_series": null,
     "kubernetes_source_type": null,
-    "region": "nyc1",
-    "size": "s-1vcpu-1gb"
+    "region": "us-east",
+    "size": "g6-nanode-1"
   }
 }
