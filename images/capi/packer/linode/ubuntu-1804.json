@@ -1,5 +1,5 @@
 {
   "build_name": "ubuntu-1804",
   "snapshot_name_suffix": "on Ubuntu 18.04",
-  "source_image": "ubuntu-18-04-x64"
+  "source_image": "linode/ubuntu18.04"
 }

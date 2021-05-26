@@ -30,4 +30,5 @@ export PATH=${PYTHON_BIN_DIR:-"${HOME}/.local/bin"}:$PATH
 
 AZURE_LOCATION=fake RESOURCE_GROUP_NAME=fake STORAGE_ACCOUNT_NAME=fake \
   DIGITALOCEAN_ACCESS_TOKEN=fake GCP_PROJECT_ID=fake \
+  LINODE_CLI_TOKEN=fake \
   make validate-all
