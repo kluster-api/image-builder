@@ -74,6 +74,12 @@ deps-do:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
 
+.PHONY: deps-linode
+deps-linode: ## Installs/checks dependencies for Linode builds
+deps-linode:
+	hack/ensure-ansible.sh
+	hack/ensure-packer.sh
+
 .PHONY: deps-gce
 deps-gce: ## Installs/checks dependencies for GCE builds
 deps-gce:
@@ -243,6 +249,8 @@ AZURE_BUILD_SIG_GEN2_NAMES ?= azure-sig-ubuntu-1804-gen2 azure-sig-ubuntu-2004-g
 
 DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
 
+LINODE_BUILD_NAMES 			?=	linode-ubuntu-1804 linode-ubuntu-2004
+
 QEMU_FLATCAR_BUILD_NAMES	?=	qemu-flatcar
 QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804 qemu-ubuntu-2004
 
@@ -275,6 +283,8 @@ AZURE_VALIDATE_SIG_TARGETS	:= $(addprefix validate-,$(AZURE_BUILD_SIG_NAMES))
 AZURE_VALIDATE_SIG_GEN2_TARGETS	:= $(addprefix validate-,$(AZURE_BUILD_SIG_GEN2_NAMES))
 DO_BUILD_TARGETS 	:= $(addprefix build-,$(DO_BUILD_NAMES))
 DO_VALIDATE_TARGETS 	:= $(addprefix validate-,$(DO_BUILD_NAMES))
+LINODE_BUILD_TARGETS 	:= $(addprefix build-,$(LINODE_BUILD_NAMES))
+LINODE_VALIDATE_TARGETS 	:= $(addprefix validate-,$(LINODE_BUILD_NAMES))
 QEMU_FLATCAR_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_FLATCAR_BUILD_NAMES))
 QEMU_FLATCAR_VALIDATE_TARGETS	:= $(addprefix validate-,$(QEMU_FLATCAR_BUILD_NAMES))
 QEMU_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_BUILD_NAMES))
@@ -379,6 +389,14 @@ $(DO_BUILD_TARGETS): deps-do
 $(DO_VALIDATE_TARGETS): deps-do
 	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst validate-do-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/digitalocean/packer.json
 
+.PHONY: $(LINODE_BUILD_TARGETS)
+$(LINODE_BUILD_TARGETS): deps-linode
+	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/linode/$(subst build-linode-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/linode/packer.json
+
+.PHONY: $(LINODE_VALIDATE_TARGETS)
+$(LINODE_VALIDATE_TARGETS): deps-linode
+	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/linode/$(subst validate-linode-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/linode/packer.json
+
 .PHONY: $(QEMU_FLATCAR_BUILD_TARGETS)
 $(QEMU_FLATCAR_BUILD_TARGETS): deps-qemu
 	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst build-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -only=flatcar packer/qemu/packer.json
@@ -461,6 +479,10 @@ build-do-ubuntu-1804: ## Builds Ubuntu 18.04 DigitalOcean Snapshot
 build-do-ubuntu-2004: ## Builds Ubuntu 20.04 DigitalOcean Snapshot
 build-do-centos-7: ## Builds Centos 7 DigitalOcean Snapshot
 build-do-all: $(DO_BUILD_TARGETS) ## Builds all DigitalOcean Snapshot
+
+build-linode-ubuntu-1804: ## Builds Ubuntu 18.04 Linode Snapshot
+build-linode-ubuntu-2004: ## Builds Ubuntu 20.04 Linode Snapshot
+build-linode-all: $(LINODE_BUILD_TARGETS) ## Builds all Linode Snapshot
 
 build-gce-ubuntu-1804: ## Builds the GCE ubuntu-1804 image
 build-gce-ubuntu-2004: ## Builds the GCE ubuntu-2004 image
@@ -564,6 +586,10 @@ validate-do-ubuntu-2004: ## Valdiates Ubuntu 20.04 DigitalOcean Snapshot Packer 
 validate-do-centos-7: ## Valdiates Centos 7 DigitalOcean Snapshot Packer config
 validate-do-all: $(DO_VALIDATE_TARGETS) ## Valdiates all DigitalOcean Snapshot Packer config
 
+validate-linode-ubuntu-1804: ## Valdiates Ubuntu 18.04 Linode Snapshot Packer config
+validate-linode-ubuntu-2004: ## Valdiates Ubuntu 20.04 Linode Snapshot Packer config
+validate-linode-all: $(LINODE_VALIDATE_TARGETS) ## Valdiates all Linode Snapshot Packer config
+
 validate-gce-ubuntu-1804: ## Valdiates Ubuntu 18.04 GCE Snapshot Packer config
 validate-gce-ubuntu-2004: ## Valdiates Ubuntu 20.04 GCE Snapshot Packer config
 validate-gce-all: $(GCE_VALIDATE_TARGETS) ## Valdiates all GCE Snapshot Packer config
@@ -602,6 +628,7 @@ validate-raw-all: $(RAW_VALIDATE_TARGETS) ## Validates all RAW Packer config
 validate-all: validate-ami-all \
 	validate-azure-all \
 	validate-do-all \
+	validate-linode-all \
 	validate-gce-all \
 	validate-node-ova-local-all \
 	validate-haproxy-ova-local-photon-3 \
