@@ -1,0 +1,6 @@
+---
+- name: Restart cloud-init-local
+  service: name=cloud-init-local state=restarted
+  ignore_errors: yes
+  retries: 2
+  delay: 5
