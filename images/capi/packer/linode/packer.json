@@ -81,6 +81,6 @@
     "kubernetes_series": null,
     "kubernetes_source_type": null,
     "region": "us-east",
-    "size": "g6-nanode-1"
+    "size": "g6-standard-1"
   }
 }
